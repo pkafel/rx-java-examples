@@ -1,7 +1,7 @@
-package com.piotrkafel.client;
+package com.piotrkafel.rx.retrofit.client;
 
 
-import com.piotrkafel.model.UserData;
+import com.piotrkafel.rx.retrofit.model.UserData;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;

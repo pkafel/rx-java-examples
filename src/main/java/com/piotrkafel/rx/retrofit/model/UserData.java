@@ -1,4 +1,4 @@
-package com.piotrkafel.model;
+package com.piotrkafel.rx.retrofit.model;
 
 
 import java.util.UUID;

@@ -1,5 +1,6 @@
-package com.piotrkafel.model;
+package com.piotrkafel.rx.retrofit.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserProfile {
@@ -10,7 +11,7 @@ public class UserProfile {
 
     public UserProfile(UserData userData, UserContacts userContacts) {
         this.userData = userData;
-        this.userContacts = userContacts.getUserContacts();
+        this.userContacts = new ArrayList<>(userContacts.getUserContacts());
     }
 
     public UserData getUserData() {
@@ -18,6 +19,6 @@ public class UserProfile {
     }
 
     public List<UserContact> getUserContacts() {
-        return userContacts;
+        return new ArrayList<>(userContacts);
     }
 }

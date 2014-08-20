@@ -13,13 +13,11 @@
             <groupId>com.squareup.retrofit</groupId>
             <artifactId>retrofit</artifactId>
             <version>1.6.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.netflix.rxjava</groupId>
             <artifactId>rxjava-core</artifactId>
             <version>0.19.6</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.rest-driver</groupId>

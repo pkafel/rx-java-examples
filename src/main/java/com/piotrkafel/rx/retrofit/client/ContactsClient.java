@@ -1,6 +1,6 @@
-package com.piotrkafel.client;
+package com.piotrkafel.rx.retrofit.client;
 
-import com.piotrkafel.model.Contacts;
+import com.piotrkafel.rx.retrofit.model.Contacts;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.Path;
