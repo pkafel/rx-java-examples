@@ -22,6 +22,7 @@ public class RetrofitExampleTest {
 
     private static final int port = 1234;
     private static final String host = "http://localhost:" + port;
+    private static final Gson gson = new Gson();
 
     @Rule
     public final ClientDriverRule clientDriver = new ClientDriverRule(port);
@@ -40,7 +41,6 @@ public class RetrofitExampleTest {
     }
 
     private void setupServerResponses(UUID userId) {
-        final Gson gson = new Gson();
         final UUID userId1 = UUID.randomUUID();
         final UUID userId2 = UUID.randomUUID();
 
@@ -49,7 +49,7 @@ public class RetrofitExampleTest {
 
         clientDriver.addExpectation(onRequestTo("/contact/" + userId).withMethod(GET),
                 giveResponse(gson.toJson(new Contacts(Lists.newArrayList(
-                        new Contact(UUID.randomUUID(), userId1, true, null), new Contact(UUID.randomUUID(), userId2, true, null)
+                        new Contact(UUID.randomUUID(), userId1, true), new Contact(UUID.randomUUID(), userId2, true)
                         ))), "application/json"));
 
         clientDriver.addExpectation(onRequestTo("/user/" + userId1).withMethod(GET),

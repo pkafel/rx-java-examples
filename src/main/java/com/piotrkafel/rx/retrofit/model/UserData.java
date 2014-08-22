@@ -11,6 +11,8 @@ public class UserData {
 
     private final String address;
 
+    // here you can put more data...
+
     public UserData(UUID userId, String name, String address) {
         this.userId = userId;
         this.name = name;

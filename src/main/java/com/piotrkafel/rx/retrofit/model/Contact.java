@@ -12,13 +12,12 @@ public class Contact {
 
     private final boolean isActive;
 
-    private final ZonedDateTime createdAt;
+    // here you can put more data...
 
-    public Contact(UUID contactId, UUID userId, boolean isActive, ZonedDateTime dateTime) {
+    public Contact(UUID contactId, UUID userId, boolean isActive) {
         this.contactId = contactId;
         this.userId = userId;
         this.isActive = isActive;
-        this.createdAt = dateTime;
     }
 
     public UUID getContactId() {
@@ -31,9 +30,5 @@ public class Contact {
 
     public boolean isActive() {
         return isActive;
-    }
-
-    public ZonedDateTime getCreatedAt() {
-        return createdAt;
     }
 }
