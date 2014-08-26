@@ -2,6 +2,7 @@ package com.piotrkafel.rx.retrofit;
 
 
 import com.github.restdriver.clientdriver.ClientDriverRule;
+import com.github.restdriver.clientdriver.HttpRealRequest;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.piotrkafel.rx.retrofit.model.Contact;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static java.lang.String.format;
 
 public class RetrofitExampleTest {
 
@@ -47,7 +49,7 @@ public class RetrofitExampleTest {
         clientDriver.addExpectation(onRequestTo("/user/" + userId).withMethod(GET),
                 giveResponse(gson.toJson(new UserData(userId, "Eddie Vedder", "somewhere in US...")), "application/json"));
 
-        clientDriver.addExpectation(onRequestTo("/contact/" + userId).withMethod(GET),
+        clientDriver.addExpectation(onRequestTo("/contact").withMethod(GET).withParam("user_id", userId),
                 giveResponse(gson.toJson(new Contacts(Lists.newArrayList(
                         new Contact(UUID.randomUUID(), userId1, true), new Contact(UUID.randomUUID(), userId2, true)
                         ))), "application/json"));
@@ -56,6 +58,6 @@ public class RetrofitExampleTest {
                 giveResponse(gson.toJson(new UserData(userId1, "Mick McCreedy", "Also in US...")), "application/json"));
 
         clientDriver.addExpectation(onRequestTo("/user/" + userId2).withMethod(GET),
-                giveResponse(gson.toJson(new UserData(userId2, "Stone Gossard", "Also in US...")), "application/json"));
+                giveResponse(gson.toJson(new UserData(userId2, "Stone Gossard", "Also in US")), "application/json"));
     }
 }
