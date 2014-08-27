@@ -1,7 +1,6 @@
 package com.piotrkafel.rx.retrofit.model;
 
 
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class Contact {

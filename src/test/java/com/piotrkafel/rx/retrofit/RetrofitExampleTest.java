@@ -12,7 +12,10 @@ import com.piotrkafel.rx.retrofit.model.UserProfile;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import rx.Observable;
+import rx.functions.Func1;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;

@@ -1,6 +1,7 @@
 package com.piotrkafel.rx.retrofit;
 
 
+import com.google.common.base.Joiner;
 import com.piotrkafel.rx.retrofit.client.ContactsClient;
 import com.piotrkafel.rx.retrofit.client.UsersClient;
 import com.piotrkafel.rx.retrofit.model.UserContact;
@@ -9,13 +10,17 @@ import com.piotrkafel.rx.retrofit.model.UserData;
 import com.piotrkafel.rx.retrofit.model.UserProfile;
 import retrofit.RestAdapter;
 import rx.Observable;
+import rx.functions.Functions;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
  * Example of using RxJava with Retrofit
  */
 public class RetrofitExample {
+
+    private static final Joiner JOINER = Joiner.on(",");
 
     private final ContactsClient contactClient;
 
@@ -39,5 +44,17 @@ public class RetrofitExample {
 
         return Observable.zip(requestedUserData, requestedUserContacts, (userData, userContacts) -> new UserProfile(userData, userContacts) )
                 .toBlocking().single(); // zip requested user data with all its contacts
+    }
+
+    public List<UserData> getContactsDataByBatchRequests(UUID userID, int batchSize) {
+
+        return contactClient.getUnwrapedContactsByUserId(userID)                    // get users contacts
+                .mergeMapIterable(Functions.identity())                             // unwrap list of contacts so we will have Observable that emits many items
+                .map(contact -> contact.getUserId().toString())                     // transform each contact into user id
+                .buffer(batchSize)                                                          // group user ids
+                .flatMap(contacts -> userClient.getUsers(JOINER.join(contacts)))            // call user service for users data
+                .mergeMapIterable(Functions.identity())                                     // again unwrap results
+                .toList()                                                                   // gather all users data into single list
+                .toBlocking().single();
     }
 }
