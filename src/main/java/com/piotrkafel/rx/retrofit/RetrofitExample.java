@@ -10,8 +10,10 @@ import com.piotrkafel.rx.retrofit.model.UserData;
 import com.piotrkafel.rx.retrofit.model.UserProfile;
 import retrofit.RestAdapter;
 import rx.Observable;
+import rx.functions.Func2;
 import rx.functions.Functions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,10 +53,11 @@ public class RetrofitExample {
         return contactClient.getUnwrapedContactsByUserId(userID)                    // get users contacts
                 .mergeMapIterable(Functions.identity())                             // unwrap list of contacts so we will have Observable that emits many items
                 .map(contact -> contact.getUserId().toString())                     // transform each contact into user id
-                .buffer(batchSize)                                                          // group user ids
-                .flatMap(contacts -> userClient.getUsers(JOINER.join(contacts)))            // call user service for users data
-                .mergeMapIterable(Functions.identity())                                     // again unwrap results
-                .toList()                                                                   // gather all users data into single list
+                .buffer(batchSize)                                                  // group user ids
+                .flatMap(contacts -> userClient.getUsers(JOINER.join(contacts)))    // call user service for users data
+                .reduce(new ArrayList<UserData>(), (accu, usersData) -> {           // reduce to list
+                    accu.addAll(usersData); return accu;
+                })
                 .toBlocking().single();
     }
 }
