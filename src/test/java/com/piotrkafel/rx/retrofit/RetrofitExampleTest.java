@@ -2,23 +2,25 @@ package com.piotrkafel.rx.retrofit;
 
 
 import com.github.restdriver.clientdriver.ClientDriverRule;
-import com.github.restdriver.clientdriver.HttpRealRequest;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.piotrkafel.rx.retrofit.model.Contact;
 import com.piotrkafel.rx.retrofit.model.Contacts;
 import com.piotrkafel.rx.retrofit.model.UserData;
 import com.piotrkafel.rx.retrofit.model.UserProfile;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
-import static java.lang.String.format;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class RetrofitExampleTest {
 
@@ -30,19 +32,33 @@ public class RetrofitExampleTest {
     public final ClientDriverRule clientDriver = new ClientDriverRule(port);
 
     @Test
-    public void getContactsTest() {
+    public void getUserProfileTest() {
         // Given
         final UUID userId = UUID.randomUUID();
-        setupServerResponses(userId);
+        setupServerResponsesForGetUserProfile(userId);
 
         // When
         final UserProfile userProfile = new RetrofitExample(host).getUserProfileExample(userId);
 
         // Then
-        Assert.assertNotNull(userProfile);
+        assertNotNull(userProfile);
     }
 
-    private void setupServerResponses(UUID userId) {
+    @Test
+    public void getUserContactsTest() {
+        // Given
+        final UUID userId = UUID.randomUUID();
+        final int batchSize = setupServerResponsesForGetContactsByBatchCalls(userId);
+
+        // When
+        final List<UserData> contacts = new RetrofitExample(host).getContactsDataByBatchRequests(userId, batchSize);
+
+        // Then
+        assertNotNull(contacts);
+        assertEquals(3, contacts.size());
+    }
+
+    private void setupServerResponsesForGetUserProfile(UUID userId) {
         final UUID userId1 = UUID.randomUUID();
         final UUID userId2 = UUID.randomUUID();
 
@@ -59,5 +75,33 @@ public class RetrofitExampleTest {
 
         clientDriver.addExpectation(onRequestTo("/user/" + userId2).withMethod(GET),
                 giveResponse(gson.toJson(new UserData(userId2, "Stone Gossard", "Also in US")), "application/json"));
+    }
+
+    private int setupServerResponsesForGetContactsByBatchCalls(UUID userId) {
+        final int batchSize = 2;
+        final UUID userId2 = UUID.randomUUID(),
+                   userId3 = UUID.randomUUID(),
+                   userId4 = UUID.randomUUID();
+
+        final ArrayList<Contact> contacts = Lists.newArrayList(
+                new Contact(UUID.randomUUID(), userId2, true),
+                new Contact(UUID.randomUUID(), userId3, true),
+                new Contact(UUID.randomUUID(), userId4, true)
+        );
+
+        final Joiner joiner = Joiner.on(",");
+
+        clientDriver.addExpectation(onRequestTo("/contact").withMethod(GET).withParam("user_id", userId).withParam("as_list", true),
+                giveResponse(gson.toJson(contacts), "application/json"));
+
+
+        clientDriver.addExpectation(onRequestTo("/user").withMethod(GET).withParam("user_ids", joiner.join(userId2, userId3)),
+                giveResponse(gson.toJson(Lists.newArrayList(new UserData(userId2, "Mat Cameron", "US"),
+                        new UserData(userId3, "Jeff Ament", "US"))), "application/json"));
+
+        clientDriver.addExpectation(onRequestTo("/user").withMethod(GET).withParam("user_ids", userId4),
+                giveResponse(gson.toJson(Lists.newArrayList(new UserData(userId4, "Boom Gaspar", "US"))), "application/json"));
+
+        return batchSize;
     }
 }
