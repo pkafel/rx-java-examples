@@ -10,7 +10,6 @@ import com.piotrkafel.rx.retrofit.model.UserData;
 import com.piotrkafel.rx.retrofit.model.UserProfile;
 import retrofit.RestAdapter;
 import rx.Observable;
-import rx.functions.Func2;
 import rx.functions.Functions;
 
 import java.util.ArrayList;
