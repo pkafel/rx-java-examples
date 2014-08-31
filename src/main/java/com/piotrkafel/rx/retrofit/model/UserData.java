@@ -1,8 +1,6 @@
 package com.piotrkafel.rx.retrofit.model;
 
 
-import com.google.common.base.Objects;
-
 import java.util.UUID;
 
 public class UserData {
@@ -35,10 +33,11 @@ public class UserData {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("userId", userId)
-                .add("name", name)
-                .add("address", address)
-                .toString();
+        final StringBuilder sb = new StringBuilder("UserData{");
+        sb.append("userId=").append(userId);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", address='").append(address).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

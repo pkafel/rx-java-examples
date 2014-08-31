@@ -1,7 +1,6 @@
 package com.piotrkafel.rx.retrofit;
 
 
-import com.google.common.base.Joiner;
 import com.piotrkafel.rx.retrofit.client.ContactsClient;
 import com.piotrkafel.rx.retrofit.client.UsersClient;
 import com.piotrkafel.rx.retrofit.model.UserContact;
@@ -21,8 +20,6 @@ import java.util.UUID;
  */
 public class RetrofitExample {
 
-    private static final Joiner JOINER = Joiner.on(",");
-
     private final ContactsClient contactClient;
 
     private final UsersClient userClient;
@@ -38,12 +35,11 @@ public class RetrofitExample {
 
         final Observable<UserContacts> requestedUserContacts = contactClient.getContactsByUserId(userId)    // get user's contacts
                 .flatMap( contacts -> Observable.from(contacts.getContacts()) )                             // unwrap contacts object so we will have Observable that emits many items
-                .mergeMap( contact -> userClient.getUser(contact.getUserId()),                              // for each contact call user client in order to get details
-                        (contact, userData) -> new UserContact(contact, userData) )                         // and zip contact with user data (or do with it whatever you like)
+                .mergeMap(contact -> userClient.getUser(contact.getUserId()), UserContact::new)             // for each contact call user client and zip result with contact object
                 .toList()                                                                                   // transform back to list
-                .map( userContactsList -> new UserContacts(userContactsList) );                             // wrap list of user contacts into UserContacts object
+                .map(UserContacts::new);                                                                    // wrap list of user contacts into UserContacts object
 
-        return Observable.zip(requestedUserData, requestedUserContacts, (userData, userContacts) -> new UserProfile(userData, userContacts) )
+        return Observable.zip(requestedUserData, requestedUserContacts, UserProfile::new)
                 .toBlocking().single(); // zip requested user data with all its contacts
     }
 
@@ -53,7 +49,7 @@ public class RetrofitExample {
                 .mergeMapIterable(Functions.identity())                             // unwrap list of contacts so we will have Observable that emits many items
                 .map(contact -> contact.getUserId().toString())                     // transform each contact into user id
                 .buffer(batchSize)                                                  // group user ids
-                .flatMap(contacts -> userClient.getUsers(JOINER.join(contacts)))    // call user service for users data
+                .flatMap(contacts -> userClient.getUsers(String.join(",", contacts)))    // call user service for users data
                 .reduce(new ArrayList<UserData>(), (accu, usersData) -> {           // reduce to list
                     accu.addAll(usersData); return accu;
                 })
