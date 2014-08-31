@@ -34,8 +34,8 @@ public class RetrofitExample {
         final Observable<UserData> requestedUserData = userClient.getUser(userId);
 
         final Observable<UserContacts> requestedUserContacts = contactClient.getContactsByUserId(userId)    // get user's contacts
-                .flatMap( contacts -> Observable.from(contacts.getContacts()) )                             // unwrap contacts object so we will have Observable that emits many items
-                .mergeMap(contact -> userClient.getUser(contact.getUserId()), UserContact::new)             // for each contact call user client and zip result with contact object
+                .flatMap(contacts -> Observable.from(contacts.getContacts()))                               // unwrap contacts object so we will have Observable that emits many items
+                .flatMap(contact -> userClient.getUser(contact.getUserId()), UserContact::new)              // for each contact call user client and zip result with contact object
                 .toList()                                                                                   // transform back to list
                 .map(UserContacts::new);                                                                    // wrap list of user contacts into UserContacts object
 
@@ -45,12 +45,12 @@ public class RetrofitExample {
 
     public List<UserData> getContactsDataByBatchRequests(UUID userID, int batchSize) {
 
-        return contactClient.getUnwrapedContactsByUserId(userID)                    // get users contacts
-                .mergeMapIterable(Functions.identity())                             // unwrap list of contacts so we will have Observable that emits many items
-                .map(contact -> contact.getUserId().toString())                     // transform each contact into user id
-                .buffer(batchSize)                                                  // group user ids
-                .flatMap(contacts -> userClient.getUsers(String.join(",", contacts)))    // call user service for users data
-                .reduce(new ArrayList<UserData>(), (accu, usersData) -> {           // reduce to list
+        return contactClient.getUnwrapedContactsByUserId(userID)                        // get users contacts
+                .flatMapIterable(Functions.identity())                                  // unwrap list of contacts so we will have Observable that emits many items
+                .map(contact -> contact.getUserId().toString())                         // transform each contact into user id
+                .buffer(batchSize)                                                      // group user ids
+                .flatMap(contacts -> userClient.getUsers(String.join(",", contacts)))   // call user service for users data
+                .reduce(new ArrayList<UserData>(), (accu, usersData) -> {               // reduce to list
                     accu.addAll(usersData); return accu;
                 })
                 .toBlocking().single();
