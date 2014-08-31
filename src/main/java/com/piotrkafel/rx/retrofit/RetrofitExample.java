@@ -55,4 +55,13 @@ public class RetrofitExample {
                 })
                 .toBlocking().single();
     }
+
+    // amb example idea:
+    // file generation - if it takes more then 5 sec:
+    //  - return information that file will be send by email
+    // else
+    // - return info where file is stored
+    public void ambExample() {
+        return;
+    }
 }
