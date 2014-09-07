@@ -31,6 +31,8 @@ public class RetrofitExampleTest {
     @Rule
     public final ClientDriverRule clientDriver = new ClientDriverRule(port);
 
+    private final RetrofitExample example = new RetrofitExample(host);
+
     @Test
     public void getUserProfileTest() {
         // Given
@@ -38,7 +40,7 @@ public class RetrofitExampleTest {
         setupServerResponsesForGetUserProfile(userId);
 
         // When
-        final UserProfile userProfile = new RetrofitExample(host).getUserProfileExample(userId);
+        final UserProfile userProfile = example.getUserProfileExample(userId);
 
         // Then
         assertNotNull(userProfile);
@@ -51,7 +53,7 @@ public class RetrofitExampleTest {
         final int batchSize = setupServerResponsesForGetContactsByBatchCalls(userId);
 
         // When
-        final List<UserData> contacts = new RetrofitExample(host).getContactsDataByBatchRequests(userId, batchSize);
+        final List<UserData> contacts = example.getContactsDataByBatchRequests(userId, batchSize);
 
         // Then
         assertNotNull(contacts);

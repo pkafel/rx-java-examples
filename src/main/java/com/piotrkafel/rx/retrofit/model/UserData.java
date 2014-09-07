@@ -30,14 +30,4 @@ public class UserData {
     public String getAddress() {
         return address;
     }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("UserData{");
-        sb.append("userId=").append(userId);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", address='").append(address).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }
