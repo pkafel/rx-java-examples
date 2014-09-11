@@ -22,7 +22,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class RetrofitExampleTest {
+public class UserFacadeTest {
 
     private static final int port = 1234;
     private static final String host = "http://localhost:" + port;
@@ -38,7 +38,7 @@ public class RetrofitExampleTest {
         setupServerResponsesForGetUserProfile(userId);
 
         // When
-        final UserProfile userProfile = new RetrofitExample(host).getUserProfileExample(userId);
+        final UserProfile userProfile = new UserFacade(host).getUserProfileExample(userId);
 
         // Then
         assertNotNull(userProfile);
@@ -51,7 +51,7 @@ public class RetrofitExampleTest {
         final int batchSize = setupServerResponsesForGetContactsByBatchCalls(userId);
 
         // When
-        final List<UserData> contacts = new RetrofitExample(host).getContactsDataByBatchRequests(userId, batchSize);
+        final List<UserData> contacts = new UserFacade(host).getContactsDataByBatchRequests(userId, batchSize);
 
         // Then
         assertNotNull(contacts);
