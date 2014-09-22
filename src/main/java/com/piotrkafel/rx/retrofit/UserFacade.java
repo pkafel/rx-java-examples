@@ -14,7 +14,6 @@ import rx.functions.Functions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Example of using RxJava with Retrofit
@@ -56,17 +55,5 @@ public class UserFacade {
                     return accu;
                 })
                 .toBlocking().single();
-    }
-
-    // amb example idea:
-    // file generation - if it takes more then 5 sec:
-    //  - return information that file will be send by email
-    // else
-    // - return info where file is stored
-    public void ambExample() {
-        final int timeout = 10;
-        final Observable<String> timeoutObservable = Observable.just("timeout").delay(10, TimeUnit.SECONDS);
-
-        return;
     }
 }
