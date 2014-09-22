@@ -18,13 +18,13 @@ import java.util.UUID;
 /**
  * Example of using RxJava with Retrofit
  */
-public class RetrofitExample {
+public class UserFacade {
 
     private final ContactsClient contactClient;
 
     private final UsersClient userClient;
 
-    public RetrofitExample(String host) {
+    public UserFacade(String host) {
         this.contactClient = new RestAdapter.Builder().setEndpoint(host).build().create(ContactsClient.class);
         this.userClient = new RestAdapter.Builder().setEndpoint(host).build().create(UsersClient.class);
     }
@@ -51,7 +51,8 @@ public class RetrofitExample {
                 .buffer(batchSize)                                                      // group user ids
                 .flatMap(contacts -> userClient.getUsers(String.join(",", contacts)))   // call user service for users data
                 .reduce(new ArrayList<UserData>(), (accu, usersData) -> {               // reduce to list
-                    accu.addAll(usersData); return accu;
+                    accu.addAll(usersData);
+                    return accu;
                 })
                 .toBlocking().single();
     }

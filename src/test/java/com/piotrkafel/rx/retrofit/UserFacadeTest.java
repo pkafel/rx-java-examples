@@ -22,7 +22,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class RetrofitExampleTest {
+public class UserFacadeTest {
 
     private static final int port = 1234;
     private static final String host = "http://localhost:" + port;
@@ -31,7 +31,7 @@ public class RetrofitExampleTest {
     @Rule
     public final ClientDriverRule clientDriver = new ClientDriverRule(port);
 
-    private final RetrofitExample example = new RetrofitExample(host);
+    private final UserFacade example = new UserFacade(host);
 
     @Test
     public void getUserProfileTest() {
