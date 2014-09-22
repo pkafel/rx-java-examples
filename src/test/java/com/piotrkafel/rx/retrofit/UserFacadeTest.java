@@ -31,6 +31,8 @@ public class UserFacadeTest {
     @Rule
     public final ClientDriverRule clientDriver = new ClientDriverRule(port);
 
+    private final UserFacade example = new UserFacade(host);
+
     @Test
     public void getUserProfileTest() {
         // Given
@@ -38,7 +40,7 @@ public class UserFacadeTest {
         setupServerResponsesForGetUserProfile(userId);
 
         // When
-        final UserProfile userProfile = new UserFacade(host).getUserProfileExample(userId);
+        final UserProfile userProfile = example.getUserProfileExample(userId);
 
         // Then
         assertNotNull(userProfile);
@@ -51,7 +53,7 @@ public class UserFacadeTest {
         final int batchSize = setupServerResponsesForGetContactsByBatchCalls(userId);
 
         // When
-        final List<UserData> contacts = new UserFacade(host).getContactsDataByBatchRequests(userId, batchSize);
+        final List<UserData> contacts = example.getContactsDataByBatchRequests(userId, batchSize);
 
         // Then
         assertNotNull(contacts);
