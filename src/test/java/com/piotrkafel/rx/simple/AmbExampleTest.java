@@ -1,6 +1,11 @@
 package com.piotrkafel.rx.simple;
 
 import org.junit.Test;
+import rx.Observable;
+import rx.functions.Func1;
+
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -17,10 +22,7 @@ public class AmbExampleTest {
         final Iterable<Integer> integers = new AmbExample().getNumbers(oddDelay, evenDelay);
 
         // Then
-        assertNotNull(integers);
-        for (Integer integer : integers) {
-            assertTrue(integer % 2 == 0);
-        }
+        assertOutput(integers, integer -> integer % 2 == 0);
     }
 
     @Test
@@ -33,9 +35,13 @@ public class AmbExampleTest {
         final Iterable<Integer> integers = new AmbExample().getNumbers(oddDelay, evenDelay);
 
         // Then
+        assertOutput(integers, integer -> integer % 2 != 0);
+    }
+
+    private void assertOutput(Iterable<Integer> integers, Predicate<Integer> predicate) {
         assertNotNull(integers);
         for (Integer integer : integers) {
-            assertTrue(integer % 2 != 0);
+            assertTrue(predicate.test(integer));
         }
     }
 }
