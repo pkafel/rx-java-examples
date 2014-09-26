@@ -4,6 +4,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.functions.Func1;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -12,14 +13,18 @@ import static org.junit.Assert.assertTrue;
 
 public class AmbExampleTest {
 
+    private static final Integer[] oddNumbers = {1, 3, 5}, evenNumbers = {2, 4, 6};
+
     @Test
     public void getOddNumbers() {
         // Given
-        final long oddDelay = 50;
-        final long evenDelay = 10;
+        final long oddDelay = 50, evenDelay = 10;
+
+        final Observable<Integer> odd = Observable.from(oddNumbers).delay(oddDelay, TimeUnit.MILLISECONDS);
+        final Observable<Integer> even = Observable.from(evenNumbers).delay(evenDelay, TimeUnit.MILLISECONDS);
 
         // When
-        final Iterable<Integer> integers = new AmbExample().getNumbers(oddDelay, evenDelay);
+        final Iterable<Integer> integers = Observable.amb(odd, even).toBlocking().toIterable();
 
         // Then
         assertOutput(integers, integer -> integer % 2 == 0);
@@ -32,7 +37,11 @@ public class AmbExampleTest {
         final long evenDelay = 100;
 
         // When
-        final Iterable<Integer> integers = new AmbExample().getNumbers(oddDelay, evenDelay);
+        final Observable<Integer> odd = Observable.from(oddNumbers).delay(oddDelay, TimeUnit.MILLISECONDS);
+        final Observable<Integer> even = Observable.from(evenNumbers).delay(evenDelay, TimeUnit.MILLISECONDS);
+
+        // When
+        final Iterable<Integer> integers = Observable.amb(odd, even).toBlocking().toIterable();
 
         // Then
         assertOutput(integers, integer -> integer % 2 != 0);
