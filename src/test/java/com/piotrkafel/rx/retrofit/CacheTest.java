@@ -20,7 +20,7 @@ import static java.util.AbstractMap.SimpleImmutableEntry;
 import static java.util.Map.Entry;
 import static org.junit.Assert.assertEquals;
 
-public class ComplexObservableTest {
+public class CacheTest {
 
     private static final String host = "http://localhost:8080";
 

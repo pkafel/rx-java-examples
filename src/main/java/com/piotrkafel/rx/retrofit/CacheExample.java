@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
-public class ComplexQuestion {
+public class CacheExample {
 
     private static final String LINE_ITEMS_PROPERTY = "lineItems";
 
@@ -21,7 +21,7 @@ public class ComplexQuestion {
             .create(AccountingClient.class);
 
     public JsonObject getContractEarnings(UUID contractUuid, Integer page, Integer perPage) {
-        Observable<JsonObject> response = accountingClient.getContractLineItems(contractUuid, page, perPage);
+        Observable<JsonObject> response = accountingClient.getContractLineItems(contractUuid, page, perPage).cache();
 
         final Observable<JsonElement> pagination = response.map(jh -> jh.get("pagination"));
         final Observable<JsonElement> result = response
