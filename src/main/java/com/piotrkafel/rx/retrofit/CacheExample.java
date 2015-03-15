@@ -20,7 +20,32 @@ public class CacheExample {
             .build()
             .create(AccountingClient.class);
 
-    public JsonObject getContractEarnings(UUID contractUuid, Integer page, Integer perPage) {
+
+    /**
+     * This is more or less how code looks right now. As you can see there is a use of Rx but it is rather poor...
+     */
+    public JsonObject beforeRefactoring(UUID contractUuid, Integer page, Integer perPage) {
+        JsonObject response = accountingClient.getContractLineItems(contractUuid, page, perPage).toBlocking().single();
+
+        final JsonElement pagination = response.get("pagination");
+        final JsonElement result = Observable.just(response)
+                .flatMap(lineItems -> Observable.from(lineItems.getAsJsonArray("lineItems")))
+                .flatMap(this::getContactEarnings)
+                .reduce(new JsonArray(), (JsonArray jsonE, JsonObject jsonA) -> {
+                    jsonE.add(jsonE);
+                    return jsonE;
+                }).cast(JsonElement.class).toBlocking().single();
+
+        JsonObject output = new JsonObject();
+        output.add(LINE_ITEMS_PROPERTY, result);
+        output.add("pagination", pagination);
+        return output;
+    }
+
+    /**
+     * This is what I would like to have - no toBlocking() except the last line of code
+     */
+    public JsonObject afterRefactoring(UUID contractUuid, Integer page, Integer perPage) {
         Observable<JsonObject> response = accountingClient.getContractLineItems(contractUuid, page, perPage).cache();
 
         final Observable<JsonElement> pagination = response.map(jh -> jh.get("pagination"));
