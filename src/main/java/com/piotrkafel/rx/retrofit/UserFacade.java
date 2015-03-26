@@ -3,17 +3,11 @@ package com.piotrkafel.rx.retrofit;
 
 import com.piotrkafel.rx.retrofit.client.ContactsClient;
 import com.piotrkafel.rx.retrofit.client.UsersClient;
-import com.piotrkafel.rx.retrofit.model.UserContact;
-import com.piotrkafel.rx.retrofit.model.UserContacts;
-import com.piotrkafel.rx.retrofit.model.UserData;
-import com.piotrkafel.rx.retrofit.model.UserProfile;
+import com.piotrkafel.rx.retrofit.model.*;
 import retrofit.RestAdapter;
 import rx.Observable;
-import rx.functions.Functions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Example of using RxJava with Retrofit
@@ -46,7 +40,7 @@ public class UserFacade {
     public List<UserData> getContactsDataByBatchRequests(UUID userID, int batchSize) {
 
         return contactClient.getUnwrapedContactsByUserId(userID)                        // get users contacts
-                .flatMapIterable(Functions.identity())                                  // unwrap list of contacts so we will have Observable that emits many items
+                .flatMapIterable(list -> list)                                          // unwrap list of contacts so we will have Observable that emits many items
                 .map(contact -> contact.getUserId().toString())                         // transform each contact into user id
                 .buffer(batchSize)                                                      // group user ids
                 .flatMap(contacts -> userClient.getUsers(String.join(",", contacts)))   // call user service for users data
@@ -55,5 +49,22 @@ public class UserFacade {
                     return accu;
                 })
                 .toBlocking().single();
+    }
+
+    public Map<String, Object> getGroupsLeaders(Integer page, Integer perPage) {
+        Observable<GroupsOfUsers> response = userClient.getGroups(page, perPage).cache();
+
+        final Observable<Pagination> pagination = response.map(GroupsOfUsers::getPagination);
+        final Observable<List<UserData>> result = response
+                .flatMapIterable(GroupsOfUsers::getGroupIds)
+                .flatMap(userClient::getGroupLeader)
+                .toList();
+
+        return Observable.zip(result, pagination, (res, pag) -> {
+            final Map<String, Object> output = new HashMap<>();
+            output.put("result", res);
+            output.put("pagination", pag);
+            return output;
+        }).toBlocking().single();
     }
 }

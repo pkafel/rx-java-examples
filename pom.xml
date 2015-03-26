@@ -15,9 +15,9 @@
             <version>1.6.1</version>
         </dependency>
         <dependency>
-            <groupId>com.netflix.rxjava</groupId>
-            <artifactId>rxjava-core</artifactId>
-            <version>0.20.4</version>
+            <groupId>io.reactivex</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.rest-driver</groupId>
